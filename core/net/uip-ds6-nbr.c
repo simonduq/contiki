@@ -137,17 +137,33 @@ uip_ds6_nbr_get_ll(uip_ds6_nbr_t *nbr)
 {
   return (uip_lladdr_t *)nbr_table_get_lladdr(ds6_neighbors, nbr);
 }
+/*---------------------------------------------------------------------------*/
+int
+uip_ds6_nbr_num(void)
+{
+  uip_ds6_nbr_t *nbr;
+  int num;
 
+  num = 0;
+  for(nbr = nbr_table_head(ds6_neighbors);
+      nbr != NULL;
+      nbr = nbr_table_next(ds6_neighbors, nbr)) {
+    num++;
+  }
+  return num;
+}
 /*---------------------------------------------------------------------------*/
 uip_ds6_nbr_t *
 uip_ds6_nbr_lookup(uip_ipaddr_t *ipaddr)
 {
   uip_ds6_nbr_t *nbr = nbr_table_head(ds6_neighbors);
-  while(nbr != NULL) {
-    if(uip_ipaddr_cmp(&nbr->ipaddr, ipaddr)) {
-      return nbr;
+  if(ipaddr != NULL) {
+    while(nbr != NULL) {
+      if(uip_ipaddr_cmp(&nbr->ipaddr, ipaddr)) {
+        return nbr;
+      }
+      nbr = nbr_table_next(ds6_neighbors, nbr);
     }
-    nbr = nbr_table_next(ds6_neighbors, nbr);
   }
   return NULL;
 }
@@ -200,10 +216,9 @@ uip_ds6_link_neighbor_callback(int status, int numtx)
 #endif /* UIP_DS6_LL_NUD */
 
 }
-
 /*---------------------------------------------------------------------------*/
 void
-uip_ds6_neighbor_periodic()
+uip_ds6_neighbor_periodic(void)
 {
   /* Periodic processing on neighbors */
   uip_ds6_nbr_t *nbr = nbr_table_head(ds6_neighbors);
