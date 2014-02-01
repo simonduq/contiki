@@ -1,4 +1,4 @@
-The Contiki Operating System
+Test -- The Contiki Operating System
 ============================
 
 [![Build Status](https://secure.travis-ci.org/contiki-os/contiki.png)](http://travis-ci.org/contiki-os/contiki)
