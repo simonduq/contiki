@@ -51,4 +51,10 @@
 #define WEBSERVER_CONF_CFS_CONNS 2
 #endif
 
+#undef NETSTACK_CONF_RDC
+#define NETSTACK_CONF_RDC nullrdc_driver
+
+#undef NULLRDC_802154_AUTOACK
+#define NULLRDC_802154_AUTOACK 1
+
 #endif /* PROJECT_ROUTER_CONF_H_ */

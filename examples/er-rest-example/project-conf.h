@@ -60,12 +60,15 @@
 #undef NETSTACK_CONF_RDC
 #define NETSTACK_CONF_RDC              nullrdc_driver
 
+#undef NULLRDC_802154_AUTOACK
+#define NULLRDC_802154_AUTOACK 1
+
 /* Disabling TCP on CoAP nodes. */
 #undef UIP_CONF_TCP
 #define UIP_CONF_TCP                   0
 
 #undef NETSTACK_CONF_MAC
-#define NETSTACK_CONF_MAC     nullmac_driver
+#define NETSTACK_CONF_MAC     csma_driver
 
 /* Increase rpl-border-router IP-buffer when using more than 64. */
 #undef REST_MAX_CHUNK_SIZE
