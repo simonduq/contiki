@@ -570,7 +570,11 @@ tcpip_ipv6_output(void)
     } else {
       uip_ds6_route_t *route;
       /* Check if we have a route to the destination address. */
+#if UIP_CONF_IP_FORWARD
       route = uip_ds6_route_lookup(&UIP_IP_BUF->destipaddr);
+#else
+      route = NULL;
+#endif
 
       /* No route was found - we send to the default route instead. */
       if(route == NULL) {
