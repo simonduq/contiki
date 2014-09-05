@@ -1002,7 +1002,7 @@ UIP_ICMP6_HANDLER(rs_input_handler, ICMP6_RS, UIP_ICMP6_HANDLER_CODE_ANY,
                   rs_input);
 #endif
 
-#if !UIP_CONF_ROUTER
+#if !UIP_CONF_ROUTER && UIP_ND6_SEND_RA
 UIP_ICMP6_HANDLER(ra_input_handler, ICMP6_RA, UIP_ICMP6_HANDLER_CODE_ANY,
                   ra_input);
 #endif
@@ -1029,7 +1029,7 @@ uip_nd6_init()
   uip_icmp6_register_input_handler(&rs_input_handler);
 #endif
 
-#if !UIP_CONF_ROUTER
+#if !UIP_CONF_ROUTER && UIP_ND6_SEND_RA
   /* Only process RAs if we are not a router */
   uip_icmp6_register_input_handler(&ra_input_handler);
 #endif
