@@ -202,7 +202,7 @@ static int
 should_send_dao(rpl_instance_t *instance, rpl_dio_t *dio, rpl_parent_t *p)
 {
   /* if MOP is set to no downward routes no DAO should be sent */
-  if(instance->mop == RPL_MOP_NO_DOWNWARD_ROUTES) {
+  if(RPL_MIN_CTRL || instance->mop == RPL_MOP_NO_DOWNWARD_ROUTES) {
     return 0;
   }
   /* check if the new DTSN is more recent */

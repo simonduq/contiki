@@ -62,6 +62,7 @@ static uint16_t next_dis;
 /* dio_send_ok is true if the node is ready to send DIOs */
 static uint8_t dio_send_ok;
 
+#if !RPL_MIN_CTRL
 /*---------------------------------------------------------------------------*/
 static void
 handle_periodic_timer(void *ptr)
@@ -70,7 +71,7 @@ handle_periodic_timer(void *ptr)
   rpl_recalculate_ranks();
 
   /* handle DIS */
-#if RPL_DIS_SEND
+#if RPL_DIS_SEND && !RPL_MIN_CTRL
   next_dis++;
   if(rpl_get_any_dag() == NULL && next_dis >= RPL_DIS_INTERVAL) {
     next_dis = 0;
@@ -167,21 +168,24 @@ handle_dio_timer(void *ptr)
     new_dio_interval(instance);
   }
 }
+#endif /* !RPL_MIN_CTRL */
 /*---------------------------------------------------------------------------*/
 void
 rpl_reset_periodic_timer(void)
 {
+#if !RPL_MIN_CTRL
   next_dis = RPL_DIS_INTERVAL / 2 +
     ((uint32_t)RPL_DIS_INTERVAL * (uint32_t)random_rand()) / RANDOM_RAND_MAX -
     RPL_DIS_START_DELAY;
   ctimer_set(&periodic_timer, CLOCK_SECOND, handle_periodic_timer, NULL);
+#endif /* !RPL_MIN_CTRL */
 }
 /*---------------------------------------------------------------------------*/
 /* Resets the DIO timer in the instance to its minimal interval. */
 void
 rpl_reset_dio_timer(rpl_instance_t *instance)
 {
-#if !RPL_LEAF_ONLY
+#if !RPL_MIN_CTRL && !RPL_LEAF_ONLY
   /* Do not reset if we are already on the minimum interval,
      unless forced to do so. */
   if(instance->dio_intcurrent > instance->dio_intmin) {

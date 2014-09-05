@@ -93,10 +93,12 @@ static uip_mcast6_route_t *mcast_group;
 #endif
 /*---------------------------------------------------------------------------*/
 /* Initialise RPL ICMPv6 message handlers */
-UIP_ICMP6_HANDLER(dis_handler, ICMP6_RPL, RPL_CODE_DIS, dis_input);
 UIP_ICMP6_HANDLER(dio_handler, ICMP6_RPL, RPL_CODE_DIO, dio_input);
+#if !RPL_MIN_CTRL
+UIP_ICMP6_HANDLER(dis_handler, ICMP6_RPL, RPL_CODE_DIS, dis_input);
 UIP_ICMP6_HANDLER(dao_handler, ICMP6_RPL, RPL_CODE_DAO, dao_input);
 UIP_ICMP6_HANDLER(dao_ack_handler, ICMP6_RPL, RPL_CODE_DAO_ACK, dao_ack_input);
+#endif /* !RPL_MIN_CTRL */
 /*---------------------------------------------------------------------------*/
 static int
 get_global_addr(uip_ipaddr_t *addr)
@@ -708,7 +710,11 @@ dao_input(void)
   }
 #endif
 
+#if !RPL_MIN_CTRL
   rep = uip_ds6_route_lookup(&prefix);
+#else
+  rep = NULL;
+#endif
 
   if(lifetime == RPL_ZERO_LIFETIME) {
     PRINTF("RPL: No-Path DAO received\n");
@@ -950,10 +956,12 @@ dao_ack_output(rpl_instance_t *instance, uip_ipaddr_t *dest, uint8_t sequence)
 void
 rpl_icmp6_register_handlers()
 {
-  uip_icmp6_register_input_handler(&dis_handler);
   uip_icmp6_register_input_handler(&dio_handler);
+#if !RPL_MIN_CTRL
+  uip_icmp6_register_input_handler(&dis_handler);
   uip_icmp6_register_input_handler(&dao_handler);
   uip_icmp6_register_input_handler(&dao_ack_handler);
+#endif /* !RPL_MIN_CTRL */
 }
 /*---------------------------------------------------------------------------*/
 #endif /* UIP_CONF_IPV6 */

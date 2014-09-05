@@ -182,6 +182,14 @@
  */
 #define RPL_DAG_MC_ETX_DIVISOR		256
 
+/* A special flag to have a node ignore all incoming
+ * RPL messages but DIOs, and not output anything but DAOs.
+ * Results in some sort of stripped down, non-standard-compliant leaf. */
+#ifdef  RPL_CONF_MIN_CTRL
+#define RPL_MIN_CTRL                RPL_CONF_MIN_CTRL
+#else
+#define RPL_MIN_CTRL                0
+#endif
 /* DIS related */
 #define RPL_DIS_SEND                    1
 #ifdef  RPL_DIS_INTERVAL_CONF

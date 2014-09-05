@@ -225,7 +225,7 @@ rpl_add_route(rpl_dag_t *dag, uip_ipaddr_t *prefix, int prefix_len,
 {
   uip_ds6_route_t *rep;
 
-  if((rep = uip_ds6_route_add(prefix, prefix_len, next_hop)) == NULL) {
+  if(RPL_MIN_CTRL || (rep = uip_ds6_route_add(prefix, prefix_len, next_hop)) == NULL) {
     PRINTF("RPL: No space for more route entries\n");
     return NULL;
   }
