@@ -93,4 +93,15 @@
 #undef COAP_PROXY_OPTION_PROCESSING
 #define COAP_PROXY_OPTION_PROCESSING   0
 
+#undef SICSLOWPAN_CONF_FRAG
+#define SICSLOWPAN_CONF_FRAG 0
+
+#undef UIP_CONF_ROUTER
+#define UIP_CONF_ROUTER 0
+
+/* A special flag to have a node ignore all incoming
+ * RPL messages but DIOs, and not output any RPL message. */
+#undef RPL_CONF_MIN_CTRL
+#define RPL_CONF_MIN_CTRL 1
+
 #endif /* __PROJECT_ERBIUM_CONF_H__ */
