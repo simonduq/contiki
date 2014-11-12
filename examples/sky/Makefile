@@ -17,4 +17,6 @@ all: blink sky-collect #rt-leds test-button test-cfs tcprudolph0
 viewrssi: ViewRSSI.class
 	make login | java ViewRSSI
 
+CONTIKI_WITH_IPV4 = 1
+CONTIKI_WITH_RIME = 1
 include $(CONTIKI)/Makefile.include
