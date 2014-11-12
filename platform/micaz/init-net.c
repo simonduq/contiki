@@ -53,11 +53,11 @@
 #include "dev/ds2401.h"
 #include "sys/node-id.h"
 
-#if WITH_UIP6
+#if UIP_CONF_IPV6
 #include "net/ipv6/uip-ds6.h"
-#endif /* WITH_UIP6 */
+#endif /* UIP_CONF_IPV6 */
 
-#if WITH_UIP
+#if UIP_CONF_IPV4
 #include "net/ip/uip.h"
 #include "net/ipv4/uip-fw.h"
 #include "net/uip-fw-drv.h"
@@ -69,7 +69,7 @@ static struct uip_fw_netif meshif =
 
 static uint8_t is_gateway;
 
-#endif /* WITH_UIP */
+#endif /* UIP_CONF_IPV4 */
 
 #define UIP_OVER_MESH_CHANNEL 8
 
@@ -102,7 +102,7 @@ set_rime_addr(void)
 }
 
 /*--------------------------------------------------------------------------*/
-#if WITH_UIP
+#if UIP_CONF_IPV4
 static void
 set_gateway(void)
 {
@@ -117,7 +117,7 @@ set_gateway(void)
     is_gateway = 1;
   }
 }
-#endif /* WITH_UIP */
+#endif /* UIP_CONF_IPV4 */
 /*---------------------------------------------------------------------------*/
 void
 init_net(void)
@@ -140,7 +140,7 @@ init_net(void)
     cc2420_set_pan_addr(IEEE802154_PANID, shortaddr, longaddr);
   }
 
-#if WITH_UIP6
+#if UIP_CONF_IPV6
   memcpy(&uip_lladdr.addr, ds2401_id, sizeof(uip_lladdr.addr));
   /* Setup nullmac-like MAC for 802.15.4 */
   /* sicslowpan_init(sicslowmac_init(&cc2420_driver)); */
@@ -187,7 +187,7 @@ init_net(void)
            ipaddr.u8[7 * 2], ipaddr.u8[7 * 2 + 1]);
   }
 
-#else /* WITH_UIP6 */
+#else /* UIP_CONF_IPV6 */
 
   NETSTACK_RDC.init();
   NETSTACK_MAC.init();
@@ -198,10 +198,10 @@ init_net(void)
          CLOCK_SECOND / (NETSTACK_RDC.channel_check_interval() == 0? 1:
                          NETSTACK_RDC.channel_check_interval()),
          CC2420_CONF_CHANNEL);
-#endif /* WITH_UIP6 */
+#endif /* UIP_CONF_IPV6 */
 
 
-#if WITH_UIP
+#if UIP_CONF_IPV4
   uip_ipaddr_t hostaddr, netmask;
  
   uip_init();
@@ -235,7 +235,7 @@ init_net(void)
   uip_over_mesh_init(UIP_OVER_MESH_CHANNEL);
   printf_P(PSTR("uIP started with IP address %d.%d.%d.%d\n"),
 	       uip_ipaddr_to_quad(&hostaddr));
-#endif /* WITH_UIP */
+#endif /* UIP_CONF_IPV4 */
 
   
   

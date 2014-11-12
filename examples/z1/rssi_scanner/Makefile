@@ -29,5 +29,6 @@ viewrssi: ViewRSSI.class
 
 # ContikiProjects: including the makefile
 #include ../../../Makefile.projects
+CONTIKI_WITH_RIME = 1
 include $(CONTIKI)/Makefile.include
 
