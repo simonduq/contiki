@@ -157,19 +157,19 @@ typedef unsigned short uip_stats_t;
 #define PACKETBUF_CONF_HDR_SIZE    0            //RF230 combined driver/mac handles headers internally
 #endif /*RF230BB */
 
-#if UIP_CONF_IPV6
+#if NETSTACK_CONF_WITH_IPV6
 #define LINKADDR_CONF_SIZE        8
 #define UIP_CONF_ICMP6            1
 #define UIP_CONF_UDP              1
 #define UIP_CONF_TCP              1
-//#define UIP_CONF_IPV6_RPL         0
+//#define NETSTACK_CONF_WITH_RPL         0
 #define NETSTACK_CONF_NETWORK       sicslowpan_driver
 #define SICSLOWPAN_CONF_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
 #else
 /* ip4 should build but is largely untested */
 #define LINKADDR_CONF_SIZE        2
 #define NETSTACK_CONF_NETWORK     rime_driver
-#endif /* UIP_CONF_IPV6 */
+#endif /* NETSTACK_CONF_WITH_IPV6 */
 
 #define UIP_CONF_LL_802154       1
 #define UIP_CONF_LLH_LEN         0
@@ -189,9 +189,9 @@ typedef unsigned short uip_stats_t;
 #define UIP_CONF_IP_FORWARD      0
 #define UIP_CONF_FWCACHE_SIZE    0
 
-#define UIP_CONF_IPV6_CHECKS     1
-#define UIP_CONF_IPV6_QUEUE_PKT  1
-#define UIP_CONF_IPV6_REASSEMBLY 0
+#define NETSTACK_CONF_WITH_IPV6_CHECKS     1
+#define NETSTACK_CONF_WITH_IPV6_QUEUE_PKT  1
+#define NETSTACK_CONF_WITH_IPV6_REASSEMBLY 0
 
 #define UIP_CONF_UDP_CHECKSUMS   1
 #define UIP_CONF_TCP_SPLIT       1
@@ -335,7 +335,7 @@ typedef unsigned short uip_stats_t;
 /* ************************************************************************** */
 //#pragma mark RPL Settings
 /* ************************************************************************** */
-#if UIP_CONF_IPV6_RPL
+#if NETSTACK_CONF_WITH_RPL
 
 #define UIP_CONF_ROUTER                 1
 #define UIP_CONF_ND6_SEND_RA		    0
