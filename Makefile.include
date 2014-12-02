@@ -90,7 +90,9 @@ ifeq ($(CONTIKI_WITH_IPV6),1)
   ifneq ($(CONTIKI_WITH_RPL),0)
     CFLAGS += -DUIP_CONF_IPV6_RPL=1
     MODULES += core/net/rpl
-  endif # UIP_CONF_RPL
+  else
+    CFLAGS += -DUIP_CONF_IPV6_RPL=0
+  endif
   MODULES += core/net/ipv6 core/net/ip
 endif
 
