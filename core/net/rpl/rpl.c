@@ -263,6 +263,9 @@ rpl_link_neighbor_callback(const linkaddr_t *addr, int status, int numtx)
         parent->flags |= RPL_PARENT_FLAG_UPDATED;
         if(instance->of->neighbor_link_callback != NULL) {
           instance->of->neighbor_link_callback(parent, status, numtx);
+#if RPL_WITH_PROBING
+          parent->last_tx_time = clock_time();
+#endif /* RPL_WITH_PROBING */
         }
       }
     }
