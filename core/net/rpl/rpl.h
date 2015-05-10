@@ -226,7 +226,8 @@ struct rpl_instance {
 #endif /* RPL_CONF_STATS */
   clock_time_t dio_next_delay; /* delay for completion of dio interval */
 #if RPL_WITH_PROBING
-  struct ctimer probing_timer;
+  struct ctimer probing_timer; /* Timer used for RPL probing */
+  rpl_parent_t *unicast_dio_target; /* Optional target for probing a neighbor with unicast DIO*/
 #endif /* RPL_WITH_PROBING */
   struct ctimer dio_timer;
   struct ctimer dao_timer;
