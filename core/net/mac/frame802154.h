@@ -74,6 +74,18 @@
 #define IEEE802154_PANID           0xABCD
 #endif /* IEEE802154_CONF_PANID */
 
+#ifdef FRAME802154_CONF_VERSION
+#define FRAME802154_VERSION FRAME802154_CONF_VERSION
+#else /* FRAME802154_CONF_VERSION */
+#define FRAME802154_VERSION FRAME802154_IEEE802154_2006
+#endif /* FRAME802154_CONF_VERSION */
+
+#ifdef FRAME802154_CONF_SUPPR_SEQNO
+#define FRAME802154_SUPPR_SEQNO FRAME802154_CONF_SUPPR_SEQNO
+#else /* FRAME802154_CONF_SUPPR_SEQNO */
+#define FRAME802154_SUPPR_SEQNO 0
+#endif /* FRAME802154_CONF_SUPPR_SEQNO */
+
 /* Macros & Defines */
 
 /** \brief These are some definitions of values used in the FCF.  See the 802.15.4 spec for details.
@@ -97,8 +109,9 @@
 #define FRAME802154_BROADCASTADDR   (0xFFFF)
 #define FRAME802154_BROADCASTPANDID (0xFFFF)
 
-#define FRAME802154_IEEE802154_2003 (0x00)
-#define FRAME802154_IEEE802154_2006 (0x01)
+#define FRAME802154_IEEE802154_2003  (0x00)
+#define FRAME802154_IEEE802154_2006  (0x01)
+#define FRAME802154_IEEE802154E_2012 (0x02)
 
 #define FRAME802154_SECURITY_LEVEL_NONE        (0)
 #define FRAME802154_SECURITY_LEVEL_MIC_32      (1)
@@ -136,7 +149,9 @@ typedef struct {
   uint8_t frame_pending;     /**< 1 bit. True if sender has more data to send */
   uint8_t ack_required;      /**< 1 bit. Is an ack frame required? */
   uint8_t panid_compression; /**< 1 bit. Is this a compressed header? */
-  /*   uint8_t reserved; */  /**< 3 bit. Unused bits */
+  /*   uint8_t reserved; */  /**< 1 bit. Unused bit */
+  uint8_t sequence_number_suppression; /**< 1 bit. Does the header omit sequence number?, see 802.15.4e */
+  uint8_t ie_list_present;   /**< 1 bit. Does the header contain Information Elements?, see 802.15.4e */
   uint8_t dest_addr_mode;    /**< 2 bit. Destination address mode, see 802.15.4 */
   uint8_t frame_version;     /**< 2 bit. 802.15.4 frame version */
   uint8_t src_addr_mode;     /**< 2 bit. Source address mode, see 802.15.4 */
@@ -146,6 +161,8 @@ typedef struct {
 typedef struct {
   uint8_t  security_level; /**< 3 bit. security level      */
   uint8_t  key_id_mode;    /**< 2 bit. Key identifier mode */
+  uint8_t  frame_counter_suppression;  /**< 1 bit. Frame counter suppression */
+  uint8_t  frame_counter_size;  /**< 1 bit. Frame counter size (0: 4 bytes, 1: 5 bytes) */
   uint8_t  reserved;       /**< 3 bit. Reserved bits       */
 } frame802154_scf_t;
 
@@ -189,6 +206,7 @@ typedef struct {
 
 /* Prototypes */
 
+void frame802154_has_panid(frame802154_fcf_t *fcf, int *has_src_pan_id, int *has_dest_pan_id);
 int frame802154_hdrlen(frame802154_t *p);
 int frame802154_create(frame802154_t *p, uint8_t *buf);
 int frame802154_parse(uint8_t *data, int length, frame802154_t *pf);
