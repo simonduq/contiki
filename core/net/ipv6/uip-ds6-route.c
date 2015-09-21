@@ -62,7 +62,7 @@ void NETSTACK_CONF_ROUTING_NEIGHBOR_REMOVED_CALLBACK(linkaddr_t *addr);
    neighbor table is registered with the central nbr-table repository
    so that it will be maintained along with the rest of the neighbor
    tables in the system. */
-NBR_TABLE(struct uip_ds6_route_neighbor_routes, nbr_routes);
+NBR_TABLE_GLOBAL(struct uip_ds6_route_neighbor_routes, nbr_routes);
 MEMB(neighborroutememb, struct uip_ds6_route_neighbor_route, UIP_DS6_ROUTE_NB);
 
 /* Each route is repressented by a uip_ds6_route_t structure and
