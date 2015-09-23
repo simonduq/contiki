@@ -1,6 +1,8 @@
 EXAMPLESDIR=../../examples
 TOOLSDIR=../../tools
 
+CHECK_WARNINGS = 1
+
 EXAMPLES = \
 hello-world/econotag \
 hello-world/mbxxx \

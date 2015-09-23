@@ -1,6 +1,8 @@
 EXAMPLESDIR=../../examples
 TOOLSDIR=../../tools
 
+CHECK_WARNINGS = 1
+
 EXAMPLES = \
 hello-world/ev-aducrf101mkxz \
 ipv6/rpl-border-router/ev-aducrf101mkxz \

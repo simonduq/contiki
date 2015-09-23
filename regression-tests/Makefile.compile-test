@@ -25,6 +25,8 @@
 # OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 # SUCH DAMAGE.
 
+CHECK_WARNINGS ?= 0
+
 all: summary
 
 build: examples tools
@@ -46,14 +48,17 @@ define dooneexample
  (echo $(1) $(2) compilation: OK | tee $(3)-$(subst /,-,$(1))$(2).summary) || \
  (echo $(1) $(2) compilation: FAIL ಠ.ಠ | tee $(3)-$(subst /,-,$(1))$(2).summary ; \
   tail -10 $(3)-$(subst /,-,$(1))$(2).report | tee $(3)-$(subst /,-,$(1))$(2).faillog))
-@( warn=`cat $(3)-$(subst /,-,$(1))$(2).warning-cnt 2> /dev/null || echo -1`; \
+@(if [ $(CHECK_WARNINGS) = 1 ] ; then \
+warn=`cat $(3)-$(subst /,-,$(1))$(2).warning-cnt 2> /dev/null || echo -1`; \
 curwarn=`cat $(3)-$(subst /,-,$(1))$(2).report | grep warning | wc -l`; \
 delta=`expr $$curwarn - $$warn`; \
-if [ $$warn -eq -1 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nFile regression-tests/01-compile-base/$(3)-$(subst /,-,$(1))$(2).warning-cnt missing, please create it accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; else \
-if [ $$delta -lt 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nCongratulations you fixed `expr $$delta \"*\" -1 ` warnings (old: $$warn new: $$curwarn). Please adjust regression-tests/01-compile-base/$(3)-$(subst /,-,$(1))$(2).warning-cnt accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
-if [ $$delta -gt 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nYou increased the number of warnings by $$delta (old: $$warn new: $$curwarn). Please fix these." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
-if [ $$delta -eq 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): OK" | tee -a $(3)-$(subst /,-,$(1))$(2).summary ; fi ; \
-fi ;\
+if [ $$warn -eq -1 ] ; then echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nFile $(3)-$(subst /,-,$(1))$(2).warning-cnt missing, please create it accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; \
+else \
+if [ $$delta -lt 0 ] ; then echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nCongratulations you fixed `expr $$delta \"*\" -1 ` warnings (old: $$warn new: $$curwarn). Please adjust $(3)-$(subst /,-,$(1))$(2).warning-cnt accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
+if [ $$delta -gt 0 ] ; then echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nYou increased the number of warnings by $$delta (old: $$warn new: $$curwarn). Please fix these." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
+if [ $$delta -eq 0 ] ; then echo "$(1) $(2) warnings (current count: $$curwarn): OK" | tee -a $(3)-$(subst /,-,$(1))$(2).summary ; fi ; \
+fi ; \
+fi ; \
 )
 endef
 
