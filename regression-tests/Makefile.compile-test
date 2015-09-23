@@ -43,9 +43,18 @@ define dooneexample
  export STM32W_CPUREV=CC; \
  make TARGET=$(2) clean && make TARGET=$(2)) > \
       $(3)-$(subst /,-,$(1))$(2).report 2>&1 && \
- (echo $(1) $(2): OK | tee $(3)-$(subst /,-,$(1))$(2).summary) || \
- (echo $(1) $(2): FAIL ಠ.ಠ | tee $(3)-$(subst /,-,$(1))$(2).summary ; \
+ (echo $(1) $(2) compilation: OK | tee $(3)-$(subst /,-,$(1))$(2).summary) || \
+ (echo $(1) $(2) compilation: FAIL ಠ.ಠ | tee $(3)-$(subst /,-,$(1))$(2).summary ; \
   tail -10 $(3)-$(subst /,-,$(1))$(2).report | tee $(3)-$(subst /,-,$(1))$(2).faillog))
+@( warn=`cat $(3)-$(subst /,-,$(1))$(2).warning-cnt 2> /dev/null || echo -1`; \
+curwarn=`cat $(3)-$(subst /,-,$(1))$(2).report | grep warning | wc -l`; \
+delta=`expr $$curwarn - $$warn`; \
+if [ $$warn -eq -1 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nFile regression-tests/01-compile-base/$(3)-$(subst /,-,$(1))$(2).warning-cnt missing, please create it accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; else \
+if [ $$delta -lt 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nCongratulations you fixed `expr $$delta \"*\" -1 ` warnings (old: $$warn new: $$curwarn). Please adjust regression-tests/01-compile-base/$(3)-$(subst /,-,$(1))$(2).warning-cnt accordingly." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
+if [ $$delta -gt 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): FAIL ಠ_ಠ\nYou increased the number of warnings by $$delta (old: $$warn new: $$curwarn). Please fix these." | tee -a $(3)-$(subst /,-,$(1))$(2).summary; fi ;\
+if [ $$delta -eq 0 ] ; then  echo "$(1) $(2) warnings (current count: $$curwarn): OK" | tee -a $(3)-$(subst /,-,$(1))$(2).summary ; fi ; \
+fi ;\
+)
 endef
 
 define doexample
