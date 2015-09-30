@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * Copyright (c) 2014, SICS Swedish ICT.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,37 +26,30 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  *
- * This file is part of the Contiki operating system.
- *
  */
 
-/**
- * \file
- *         Header file for the MSP430-specific rtimer code
- * \author
- *         Adam Dunkels <adam@sics.se>
- */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __TSCH_RPL_H__
+#define __TSCH_RPL_H__
 
-#include "sys/rtimer.h"
+/********** Includes **********/
 
-#ifdef RTIMER_CONF_SECOND
-#define RTIMER_ARCH_SECOND RTIMER_CONF_SECOND
-#else
-#define RTIMER_ARCH_SECOND (4096U*8)
-#endif
+#include "net/rpl/rpl.h"
+#include "net/mac/tsch/tsch-queue.h"
 
-/* Do the math in 32bits to save precision.
- * Round to nearest integer rather than truncate. */
-#define US_TO_RTIMERTICKS(US)  (((US)>=0) ? \
-                               ((((int32_t)(US)*32768L)+500000) / 1000000L) : \
-                               ((((int32_t)(US)*32768L)-500000) / 1000000L))
-#define RTIMERTICKS_TO_US(T)   (((T)>=0) ? \
-                               ((((int32_t)(T)*1000000L)+16384) / 32768L) : \
-                               ((((int32_t)(T)*1000000L)-16384) / 32768L))
+/********** Functions *********/
 
-rtimer_clock_t rtimer_arch_now(void);
+/* To use, set #define TSCH_CALLBACK_JOINING_NETWORK tsch_rpl_callback_joining_network */
+void tsch_rpl_callback_joining_network(void);
+/* Upon leaving a TSCH network, perform a local repair
+ * (cleanup neighbor state, reset Trickle timer etc)
+ * To use, set #define TSCH_CALLBACK_LEAVING_NETWORK tsch_rpl_callback_leaving_network */
+void tsch_rpl_callback_leaving_network(void);
+/* Set TSCH EB period based on current RPL DIO period.
+ * To use, set #define RPL_CALLBACK_PARENT_SWITCH tsch_rpl_callback_new_dio_interval */
+void tsch_rpl_callback_new_dio_interval(uint8_t dio_interval);
+/* Set TSCH time source based on current RPL preferred parent.
+ * To use, set #define RPL_CALLBACK_PARENT_SWITCH tsch_rpl_callback_parent_switch */
+void tsch_rpl_callback_parent_switch(rpl_parent_t *old, rpl_parent_t *new);
 
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __TSCH_RPL_H__ */

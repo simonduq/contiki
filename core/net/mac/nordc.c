@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * Copyright (c) 2014, SICS Swedish ICT.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,31 +32,63 @@
 
 /**
  * \file
- *         Header file for the MSP430-specific rtimer code
+ *         This RDC layer does nothing. It is meant for use with MAC
+ *         layers that do not use a RDC at all, such as TSCH.
  * \author
- *         Adam Dunkels <adam@sics.se>
+ *         Simon Duquennoy <simonduq@sics.se>
+ *
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#include "net/mac/rdc.h"
+#include "net/netstack.h"
 
-#include "sys/rtimer.h"
-
-#ifdef RTIMER_CONF_SECOND
-#define RTIMER_ARCH_SECOND RTIMER_CONF_SECOND
-#else
-#define RTIMER_ARCH_SECOND (4096U*8)
-#endif
-
-/* Do the math in 32bits to save precision.
- * Round to nearest integer rather than truncate. */
-#define US_TO_RTIMERTICKS(US)  (((US)>=0) ? \
-                               ((((int32_t)(US)*32768L)+500000) / 1000000L) : \
-                               ((((int32_t)(US)*32768L)-500000) / 1000000L))
-#define RTIMERTICKS_TO_US(T)   (((T)>=0) ? \
-                               ((((int32_t)(T)*1000000L)+16384) / 32768L) : \
-                               ((((int32_t)(T)*1000000L)-16384) / 32768L))
-
-rtimer_clock_t rtimer_arch_now(void);
-
-#endif /* RTIMER_ARCH_H_ */
+/*---------------------------------------------------------------------------*/
+static void
+send_packet(mac_callback_t sent, void *ptr)
+{
+}
+/*---------------------------------------------------------------------------*/
+static void
+send_list(mac_callback_t sent, void *ptr, struct rdc_buf_list *buf_list)
+{
+}
+/*---------------------------------------------------------------------------*/
+static void
+packet_input(void)
+{
+}
+/*---------------------------------------------------------------------------*/
+static int
+on(void)
+{
+  return 0;
+}
+/*---------------------------------------------------------------------------*/
+static int
+off(int keep_radio_on)
+{
+  return 0;
+}
+/*---------------------------------------------------------------------------*/
+static unsigned short
+channel_check_interval(void)
+{
+  return 0;
+}
+/*---------------------------------------------------------------------------*/
+static void
+init(void)
+{
+}
+/*---------------------------------------------------------------------------*/
+const struct rdc_driver nordc_driver = {
+  "nordc",
+  init,
+  send_packet,
+  send_list,
+  packet_input,
+  on,
+  off,
+  channel_check_interval,
+};
+/*---------------------------------------------------------------------------*/

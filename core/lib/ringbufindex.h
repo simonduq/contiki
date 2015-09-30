@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007, Swedish Institute of Computer Science.
+ * Copyright (c) 2015, SICS Swedish ICT.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,31 +32,41 @@
 
 /**
  * \file
- *         Header file for the MSP430-specific rtimer code
+ *         Header file for the ringbufindex library
  * \author
- *         Adam Dunkels <adam@sics.se>
+ *         Simon Duquennoy <simonduq@sics.se>
  */
 
-#ifndef RTIMER_ARCH_H_
-#define RTIMER_ARCH_H_
+#ifndef __RINGBUFINDEX_H__
+#define __RINGBUFINDEX_H__
 
-#include "sys/rtimer.h"
+#include "contiki-conf.h"
 
-#ifdef RTIMER_CONF_SECOND
-#define RTIMER_ARCH_SECOND RTIMER_CONF_SECOND
-#else
-#define RTIMER_ARCH_SECOND (4096U*8)
-#endif
+struct ringbufindex {
+  uint8_t mask;
+  /* These must be 8-bit quantities to avoid race conditions. */
+  uint8_t put_ptr, get_ptr;
+};
 
-/* Do the math in 32bits to save precision.
- * Round to nearest integer rather than truncate. */
-#define US_TO_RTIMERTICKS(US)  (((US)>=0) ? \
-                               ((((int32_t)(US)*32768L)+500000) / 1000000L) : \
-                               ((((int32_t)(US)*32768L)-500000) / 1000000L))
-#define RTIMERTICKS_TO_US(T)   (((T)>=0) ? \
-                               ((((int32_t)(T)*1000000L)+16384) / 32768L) : \
-                               ((((int32_t)(T)*1000000L)-16384) / 32768L))
+/* Initialize a ring buffer. The size must be a power of two */
+void ringbufindex_init(struct ringbufindex *r, uint8_t size);
+/* Put one element to the ring buffer */
+int ringbufindex_put(struct ringbufindex *r);
+/* Check if there is space to put an element.
+ * Return the index where the next element is to be added */
+int ringbufindex_peek_put(const struct ringbufindex *r);
+/* Remove the first element and return its index */
+int ringbufindex_get(struct ringbufindex *r);
+/* Return the index of the first element
+ * (which will be removed if calling ringbufindex_peek) */
+int ringbufindex_peek_get(const struct ringbufindex *r);
+/* Return the ring buffer size */
+int ringbufindex_size(const struct ringbufindex *r);
+/* Return the number of elements currently in the ring buffer */
+int ringbufindex_elements(const struct ringbufindex *r);
+/* Is the ring buffer full? */
+int ringbufindex_full(const struct ringbufindex *r);
+/* Is the ring buffer empty? */
+int ringbufindex_empty(const struct ringbufindex *r);
 
-rtimer_clock_t rtimer_arch_now(void);
-
-#endif /* RTIMER_ARCH_H_ */
+#endif /* __RINGBUFINDEX_H__ */
