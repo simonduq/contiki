@@ -94,8 +94,8 @@ ctr(uint8_t *m, uint8_t m_len, const uint8_t *nonce)
   current_key_is_new = 0;
 }
 /*---------------------------------------------------------------------------*/
-static void
-aead(const uint8_t *nonce,
+void
+jn516x_aead(const uint8_t *nonce,
      uint8_t *m, uint8_t m_len,
      const uint8_t *a, uint8_t a_len,
      uint8_t *result, uint8_t mic_len,
