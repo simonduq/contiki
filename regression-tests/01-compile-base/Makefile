@@ -1,6 +1,8 @@
 EXAMPLESDIR=../../examples
 TOOLSDIR=../../tools
 
+CHECK_WARNINGS = 1
+
 EXAMPLES = \
 hello-world/avr-raven \
 hello-world/exp5438 \
