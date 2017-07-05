@@ -73,6 +73,13 @@
 #define SICSLOWPAN_COMPRESSION_HC06        2 /* RFC 6282 */
 #define SICSLOWPAN_COMPRESSION_6LORH       3 /* RFC 8025 for paging dispatch,
                                 * draft-ietf-6lo-routin-dispatch-05 for 6LoRH */
+
+#ifdef SICSLOWPAN_CONF_COMPRESSION
+#define SICSLOWPAN_COMPRESSION SICSLOWPAN_CONF_COMPRESSION
+#else /* SICSLOWPAN_CONF_COMPRESSION */
+#define SICSLOWPAN_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
+#endif /* SICSLOWPAN_CONF_COMPRESSION */
+
 /** @} */
 
 /**

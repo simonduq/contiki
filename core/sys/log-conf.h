@@ -50,7 +50,7 @@
 #ifdef LOG_CONF_WITH_COMPACT_ADDR
 #define LOG_WITH_COMPACT_ADDR LOG_CONF_WITH_COMPACT_ADDR
 #else /* LOG_CONF_WITH_COMPACT_ADDR */
-#define LOG_WITH_COMPACT_ADDR 0
+#define LOG_WITH_COMPACT_ADDR 1
 #endif /* LOG_CONF_WITH_COMPACT_ADDR */
 
 /* Prefix all logs with file name and line-of-code */
@@ -79,11 +79,11 @@
 /******************************************************************************/
 
 #ifndef RPL_LOG_LEVEL
-#define RPL_LOG_LEVEL                         LOG_LEVEL_NONE /* Only for rpl-lite */
+#define RPL_LOG_LEVEL                         LOG_LEVEL_WARN /* Only for rpl-lite */
 #endif /* RPL_LOG_LEVEL */
 
 #ifndef TCPIP_LOG_LEVEL
-#define TCPIP_LOG_LEVEL                       LOG_LEVEL_NONE
+#define TCPIP_LOG_LEVEL                       LOG_LEVEL_WARN
 #endif /* TCPIP_LOG_LEVEL */
 
 #ifndef IPV6_LOG_LEVEL
@@ -91,7 +91,7 @@
 #endif /* IPV6_LOG_LEVEL */
 
 #ifndef SICSLOWPAN_LOG_LEVEL
-#define SICSLOWPAN_LOG_LEVEL                  LOG_LEVEL_NONE
+#define SICSLOWPAN_LOG_LEVEL                  LOG_LEVEL_INFO
 #endif /* SICSLOWPAN_LOG_LEVEL */
 
 #ifndef MAC_LOG_LEVEL

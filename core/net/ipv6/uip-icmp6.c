@@ -193,11 +193,11 @@ uip_icmp6_error_output(uint8_t type, uint8_t code, uint32_t param) {
     }
   }
 
-#if UIP_CONF_IPV6_RPL
+#if UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH)
   rpl_ext_header_remove();
 #else
   uip_ext_len = 0;
-#endif /* UIP_CONF_IPV6_RPL */
+#endif /* UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH) */
 
   /* remember data of original packet before shifting */
   uip_ipaddr_copy(&tmp_ipaddr, &UIP_IP_BUF->destipaddr);

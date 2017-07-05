@@ -24,7 +24,7 @@
       org.contikios.cooja.mspmote.SkyMoteType
       <identifier>sky2</identifier>
       <description>Sky Mote Type #sky2</description>
-      <firmware EXPORT="copy">[CONTIKI_DIR]/examples/ipv6/rpl-simple/node.sky</firmware>
+      <firmware EXPORT="copy">[CONTIKI_DIR]/../contiki-sics-iot/examples/ipv6/rpl-simple/node.sky</firmware>
       <moteinterface>org.contikios.cooja.interfaces.Position</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.RimeAddress</moteinterface>
       <moteinterface>org.contikios.cooja.interfaces.IPAddress</moteinterface>

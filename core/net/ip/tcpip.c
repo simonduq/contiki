@@ -102,7 +102,7 @@ enum {
   PACKET_INPUT
 };
 
-#if UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING
+#if UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH)
 #define NEXTHOP_NON_STORING(addr) rpl_ext_header_srh_get_next_hop(addr)
 #else
 #define NEXTHOP_NON_STORING(addr) 0
@@ -658,14 +658,14 @@ tcpip_ipv6_output(void)
     goto exit;
   }
 
-#if UIP_CONF_IPV6_RPL
+#if UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH)
   if(!rpl_ext_header_update()) {
     /* Packet can not be forwarded */
     LOG_ERR("output: RPL header update error\n");
     uip_clear_buf();
     return;
   }
-#endif /* UIP_CONF_IPV6_RPL */
+#endif /* UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH) */
 
   if(uip_is_addr_mcast(&UIP_IP_BUF->destipaddr)) {
     linkaddr = NULL;

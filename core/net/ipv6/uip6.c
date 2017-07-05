@@ -880,13 +880,13 @@ ext_hdr_options_process(void)
        * Using this fix, the header is ignored, and the next header (if
        * present) is processed.
        */
-#if UIP_CONF_IPV6_RPL
+#if UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH)
       LOG_DBG("Processing RPL option\n");
       if(!rpl_ext_header_hbh_update(uip_ext_opt_offset)) {
         LOG_ERR("RPL Option Error: Dropping Packet\n");
         return 1;
       }
-#endif /* UIP_CONF_IPV6_RPL */
+#endif /* UIP_CONF_IPV6_RPL && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH) */
       uip_ext_opt_offset += (UIP_EXT_HDR_OPT_BUF->len) + 2;
       return 0;
     default:
@@ -1360,11 +1360,11 @@ uip_process(uint8_t flag)
 
           LOG_DBG("Processing Routing header\n");
           if(UIP_ROUTING_BUF->seg_left > 0) {
-#if UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING
+#if UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH)
             if(rpl_ext_header_srh_update()) {
               goto send; /* Proceed to forwarding */
             }
-#endif /* UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING */
+#endif /* UIP_CONF_IPV6_RPL && RPL_WITH_NON_STORING && (SICSLOWPAN_COMPRESSION != SICSLOWPAN_COMPRESSION_6LORH) */
             uip_icmp6_error_output(ICMP6_PARAM_PROB, ICMP6_PARAMPROB_HEADER, UIP_IPH_LEN + uip_ext_len + 2);
             UIP_STAT(++uip_stat.ip.drop);
             LOG_ERR("unrecognized routing type");

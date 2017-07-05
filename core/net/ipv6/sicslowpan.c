@@ -70,17 +70,14 @@
 #include "net/netstack.h"
 #include "net/packetbuf.h"
 #include "net/queuebuf.h"
+#if UIP_CONF_IPV6_RPL_LITE == 1
+#include "net/rpl-lite/rpl.h"
+#endif
 
 /* Log configuration */
 #include "sys/log.h"
 #define LOG_MODULE "6LoWPAN"
 #define LOG_LEVEL SICSLOWPAN_LOG_LEVEL
-
-#ifdef SICSLOWPAN_CONF_COMPRESSION
-#define SICSLOWPAN_COMPRESSION SICSLOWPAN_CONF_COMPRESSION
-#else /* SICSLOWPAN_CONF_COMPRESSION */
-#define SICSLOWPAN_COMPRESSION SICSLOWPAN_COMPRESSION_6LORH
-#endif /* SICSLOWPAN_CONF_COMPRESSION */
 
 #define GET16(ptr,index) (((uint16_t)((ptr)[index] << 8)) | ((ptr)[(index) + 1]))
 #define SET16(ptr,index,value) do {     \
@@ -994,13 +991,13 @@ compress_hdr_iphc(linkaddr_t *link_destaddr)
       next_hdr = NULL;
       break;
     default:
-      LOG_INFO("Error - could not handle compression of header");
+      LOG_ERR("IPHC: could not handle compression of header");
     }
   }
   if(next_hdr != NULL) {
     /* Last header could not be compressed - we assume that this is then OK!*/
     /* as the last EXT_HDR should be "uncompressed" and have the next there */
-    LOG_INFO("Last header could not be compressed: %d\n", *next_hdr);
+    LOG_INFO("IPHC: last header is not compressed: %d\n", *next_hdr);
   }
   /* before the packetbuf_hdr_len operation */
   PACKETBUF_IPHC_BUF[0] = iphc0;
@@ -1193,7 +1190,7 @@ uncompress_hdr_iphc(uint8_t *buf, uint16_t ip_len)
   /* The next header is compressed, NHC is following */
   last_nextheader =  &SICSLOWPAN_IP_BUF(buf)->proto;
   ip_payload = SICSLOWPAN_IPPAYLOAD_BUF(buf);
- 
+
   while(nhc && (*hc06_ptr & SICSLOWPAN_NHC_MASK) == SICSLOWPAN_NHC_EXT_HDR) {
     uint8_t eid = (*hc06_ptr & 0x0e) >> 1;
     /* next header compression flag */
@@ -1351,15 +1348,6 @@ add_paging_dispatch(uint8_t page)
   PACKETBUF_6LO_PTR[PACKETBUF_6LO_DISPATCH] = SICSLOWPAN_DISPATCH_PAGING | page;
   packetbuf_hdr_len++;
 }
-/*--------------------------------------------------------------------*/
-/**
- * \brief Adds 6lorh headers before IPHC
- */
-static void
-add_6lorh_hdr(void)
-{
-  /* Do nothing yet */
-}
 #endif /* SICSLOWPAN_COMPRESSION == SICSLOWPAN_COMPRESSION_6LORH */
 
 /*--------------------------------------------------------------------*/
@@ -1376,15 +1364,7 @@ digest_paging_dispatch(void)
     packetbuf_hdr_len++;
   }
 }
-/*--------------------------------------------------------------------*/
-/**
- * \brief Digest 6lorh headers before IPHC
- */
-static void
-digest_6lorh_hdr(void)
-{
-  /* Do nothing yet */
-}
+
 /*--------------------------------------------------------------------*/
 /** \name IPv6 dispatch "compression" function
  * @{                                                                 */
@@ -1513,9 +1493,11 @@ output(const uip_lladdr_t *localdest)
 #if SICSLOWPAN_COMPRESSION == SICSLOWPAN_COMPRESSION_6LORH
   /* Add 6LoRH headers before IPHC. Only needed on routed traffic
   (non link-local). */
-  if(!uip_is_addr_linklocal(&UIP_IP_BUF->destipaddr)) {
+  if(!uip_is_addr_linklocal(&UIP_IP_BUF->destipaddr)
+     && !uip_is_addr_mcast(&UIP_IP_BUF->destipaddr)) {
+    LOG_INFO("adding Page 1 and 6LoRH headers\n");
     add_paging_dispatch(1);
-    add_6lorh_hdr();
+    packetbuf_hdr_len += rpl_6lorh_add_headers(packetbuf_ptr);
   }
 #endif /* SICSLOWPAN_COMPRESSION == SICSLOWPAN_COMPRESSION_6LORH */
 #if SICSLOWPAN_COMPRESSION >= SICSLOWPAN_COMPRESSION_HC06
@@ -1691,6 +1673,7 @@ input(void)
   /* offset of the fragment in the IP packet */
   uint8_t frag_offset = 0;
   uint8_t *buffer;
+  linkaddr_t next_hop; /* Next hop, used by 6LoRH */
 
 #if SICSLOWPAN_CONF_FRAG
   uint8_t is_fragment = 0;
@@ -1795,8 +1778,23 @@ input(void)
   curr_page = 0;
   digest_paging_dispatch();
   if(curr_page == 1) {
+    int bytes_parsed = 0;
+    int do_forward = 0;
     LOG_INFO("input: page 1, 6LoRH\n");
-    digest_6lorh_hdr();
+    bytes_parsed = rpl_6lorh_digest_headers(packetbuf_ptr, &do_forward, &next_hop);
+    if(bytes_parsed == 0) {
+      LOG_ERR("input: failed to parse 6LoRH headers\n");
+      return;
+    }
+    if(do_forward) {
+      /* We have a next hop, stop processing here and forward */
+      tcpip_output((const uip_lladdr_t *)&next_hop);
+      LOG_INFO("input: forwarding directly to ");
+      LOG_INFO_LLADDR(&next_hop);
+      LOG_INFO_("\n");
+      return;
+    }
+    packetbuf_hdr_len += bytes_parsed;
   } else if (curr_page > 1) {
     LOG_INFO("input: page %u not supported\n", curr_page);
   }

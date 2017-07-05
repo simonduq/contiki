@@ -51,6 +51,7 @@
 #include "net/rpl-lite/rpl-dag-root.h"
 #include "net/rpl-lite/rpl-neighbor.h"
 #include "net/rpl-lite/rpl-ext-header.h"
+#include "net/rpl-lite/rpl-6lorh.h"
 #include "net/rpl-lite/rpl-timers.h"
 
 /**
