@@ -227,9 +227,10 @@
 #endif /* SICSLOWPAN_CONF_COMPRESSION_THRESHOLD */
 
 /* SICSLOWPAN_CONF_COMPRESSION specifies what 6lowpan compression
-   mechanism to be used. 6lowpan hc06 is the default in Contiki. */
+   mechanism to be used. 6lowpan 6lorh is the default in Contiki, bu
+   only supported by rpl-lite. Else, we use the older HC06. */
 #ifndef SICSLOWPAN_CONF_COMPRESSION
-#define SICSLOWPAN_CONF_COMPRESSION SICSLOWPAN_COMPRESSION_HC06
+#define SICSLOWPAN_CONF_COMPRESSION ((UIP_CONF_IPV6_RPL_LITE == 1) ? SICSLOWPAN_COMPRESSION_6LORH : SICSLOWPAN_COMPRESSION_HC06)
 #endif /* SICSLOWPAN_CONF_COMPRESSION */
 
 #endif /* CONTIKI_DEFAULT_CONF_H */
